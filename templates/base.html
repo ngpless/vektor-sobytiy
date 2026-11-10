@@ -79,12 +79,12 @@
           <li><a href="{{ url_for('news_list') }}" {% if request.path.startswith('/news') %}aria-current="page"{% endif %}>Новости</a></li>
           <li><a href="{{ url_for('contacts') }}" {% if request.path == '/contacts' %}aria-current="page"{% endif %}>Контакты</a></li>
           {% if me %}
-          <li><a href="{{ url_for('cabinet') }}" {% if request.path.startswith(('/cabinet', '/manager', '/admin', '/dialog')) %}aria-current="page"{% endif %}>{{ 'Кабинет' if me.role == 'client' else ('Панель менеджера' if me.role == 'manager' else 'Администрирование') }}</a></li>
+          <li><a href="{{ url_for('cabinet') }}" {% if request.path.startswith(('/cabinet', '/manager', '/admin', '/dialog')) %}aria-current="page"{% endif %}>{{ 'Кабинет' if me.role == 'client' else ('Менеджер' if me.role == 'manager' else 'Админ-панель') }}</a></li>
           {% endif %}
         </ul>
         <form class="search-form" action="{{ url_for('search') }}" method="get" role="search">
           <label class="visually-hidden" for="site-search">Поиск по сайту</label>
-          <input type="search" id="site-search" name="q" placeholder="Поиск по сайту" maxlength="100" value="{{ q|default('') }}">
+          <input type="search" id="site-search" name="q" placeholder="Поиск" maxlength="100" value="{{ q|default('') }}">
           <button type="submit" aria-label="Найти"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><circle cx="10" cy="10" r="6.5" fill="none" stroke="currentColor" stroke-width="2.4"/><line x1="15" y1="15" x2="21" y2="21" stroke="currentColor" stroke-width="2.4"/></svg></button>
         </form>
       </nav>

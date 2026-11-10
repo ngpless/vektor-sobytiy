@@ -39,7 +39,8 @@ def word_count(text):
 
 def highlight(text, query, width=90):
     """Возвращает фрагмент текста вокруг первого совпадения с подсветкой <mark>."""
-    text = re.sub(r"\s+", " ", text or "").strip()
+    text = re.sub(r"^(## |- |> )", "", text or "", flags=re.M)
+    text = re.sub(r"\s+", " ", text).strip()
     query = (query or "").strip()
     if not query:
         return Markup(escape(text[: width * 2]))
