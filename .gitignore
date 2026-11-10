@@ -1,0 +1,10 @@
+*.db
+*.db-journal
+instance/
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+*.key
+secret*
