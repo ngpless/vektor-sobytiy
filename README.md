@@ -39,12 +39,13 @@ Linux и macOS: `python3 -m venv .venv && source .venv/bin/activate && pip insta
 ## Запуск через Apache из XAMPP (обратный прокси)
 
 1. Запустить Flask (порт 5000) и не закрывать окно.
-2. В `C:\xampp\apache\conf\httpd.conf` включить модули `proxy_module`, `proxy_http_module`, `headers_module` и строку `Include conf/extra/httpd-vhosts.conf`.
+2. В `C:\xampp\apache\conf\httpd.conf` включить модули `proxy_module`, `proxy_http_module`, `headers_module` (в XAMPP по умолчанию закомментирован только `proxy_http_module`) и строку `Include conf/extra/httpd-vhosts.conf`.
 3. В `C:\xampp\apache\conf\extra\httpd-vhosts.conf` добавить:
 
 ```
 <VirtualHost *:80>
     ServerName vektor.localhost
+    ServerAlias localhost
     ProxyPreserveHost On
     ProxyRequests Off
     ProxyPass        / http://127.0.0.1:5000/
