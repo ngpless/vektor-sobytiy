@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% from "_staff.html" import manager_tabs %}
+{% from "_forms.html" import errors_box, csrf, field %}
+{% block title %}Клиенты: создание учётной записи{% endblock %}
+{% block content %}
+<div class="wrap">
+  <nav class="crumbs" aria-label="Хлебные крошки"><ol><li><a href="{{ url_for('index') }}">Главная</a></li><li><a href="{{ url_for('manager_home') }}">Панель менеджера</a></li><li aria-current="page">Клиенты</li></ol></nav>
+  <h1 class="h1-big">Клиенты</h1>
+  {{ manager_tabs('clients') }}
+  {% if created %}
+  <div class="credentials" role="status">
+    <h2 class="h3-big">Учётная запись создана</h2>
+    <p>Передайте клиенту данные для входа. Пароль показывается один раз; в базе хранится только его хеш. При первом входе клиент обязательно задаст собственный пароль.</p>
+    <dl class="facts">
+      <dt>Клиент</dt><dd>{{ created.full_name }}</dd>
+      <dt>Логин</dt><dd><code>{{ created.login }}</code></dd>
+      <dt>Временный пароль</dt><dd><code>{{ created.password }}</code></dd>
+    </dl>
+  </div>
+  {% endif %}
+  <div class="two-col">
+    <section class="form-card" aria-labelledby="cl-new">
+      <h2 id="cl-new" class="h2-big">Новая учётная запись клиента</h2>
+      {{ errors_box(errors) }}
+      <form method="post" action="{{ url_for('manager_clients') }}" novalidate>
+        {{ csrf() }}
+        {{ field('full_name', 'Имя и фамилия клиента', form.full_name, maxlength=80) }}
+        {{ field('login', 'Логин', form.login, maxlength=30, hint='Латинские буквы, цифры и знаки _ . -') }}
+        {{ field('email', 'Электронная почта', form.email, type='email', maxlength=120) }}
+        {{ field('phone', 'Телефон', form.phone, type='tel', required=False, maxlength=20) }}
+        {{ field('password', 'Временный пароль', '', required=False, autocomplete='off', hint='Оставьте пустым, чтобы пароль создался автоматически.') }}
+        <button class="btn" type="submit">Создать клиента</button>
+      </form>
+    </section>
+    <section aria-labelledby="cl-list">
+      <h2 id="cl-list" class="h2-big">Все клиенты ({{ clients|length }})</h2>
+      <table class="table">
+        <thead><tr><th scope="col">Имя</th><th scope="col">Логин</th><th scope="col">Как создан</th></tr></thead>
+        <tbody>
+        {% for c in clients %}
+        <tr><td>{{ c.full_name }}</td><td>{{ c.login }}</td><td>{% if c.creator %}сотрудником: {{ c.creator.split(' ')[0] }}{% else %}самостоятельно{% endif %}</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </section>
+  </div>
+</div>
+{% endblock %}

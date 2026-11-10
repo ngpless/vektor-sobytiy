@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% from "_staff.html" import manager_tabs %}
+{% block title %}Панель менеджера{% endblock %}
+{% block content %}
+<div class="wrap">
+  <nav class="crumbs" aria-label="Хлебные крошки"><ol><li><a href="{{ url_for('index') }}">Главная</a></li><li aria-current="page">Панель менеджера</li></ol></nav>
+  <h1 class="h1-big">Панель менеджера</h1>
+  <p class="lead">{{ me.full_name }}, роль: {{ ROLE_TITLES[me.role] }}.</p>
+  {{ manager_tabs('home') }}
+  <ul class="stat-cards">
+    <li><a href="{{ url_for('manager_dialogs') }}"><strong>{{ counts.dialogs }}</strong><span>открытых диалогов</span></a></li>
+    <li><a href="{{ url_for('manager_requests') }}"><strong>{{ counts.new_requests }}</strong><span>новых заявок</span></a></li>
+    <li><a href="{{ url_for('manager_feedback') }}"><strong>{{ counts.feedback }}</strong><span>необработанных обращений</span></a></li>
+    <li><a href="{{ url_for('manager_clients') }}"><strong>{{ counts.clients }}</strong><span>клиентов</span></a></li>
+  </ul>
+  <div class="two-col">
+    <section class="form-card">
+      <h2 class="h3-big">Что можно сделать</h2>
+      <ul class="plain-list">
+        <li><a href="{{ url_for('manager_dialogs') }}">Ответить на входящие сообщения клиентов</a></li>
+        <li><a href="{{ url_for('manager_clients') }}">Создать учётную запись клиента</a></li>
+        <li><a href="{{ url_for('manager_publish', kind='article') }}">Опубликовать статью</a></li>
+        <li><a href="{{ url_for('manager_publish', kind='news') }}">Опубликовать новость</a></li>
+      </ul>
+    </section>
+    <section class="form-card">
+      <h2 class="h3-big">Права роли «Менеджер»</h2>
+      <p>Менеджер видит все диалоги и заявки, отвечает клиентам, создаёт учётные записи клиентов и публикует материалы. Управление ролями и баннерами доступно только администратору.</p>
+    </section>
+  </div>
+</div>
+{% endblock %}

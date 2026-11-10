@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% from "_forms.html" import errors_box, csrf, field, textarea %}
+{% block title %}Новый диалог{% endblock %}
+{% block content %}
+<div class="wrap narrow">
+  <nav class="crumbs" aria-label="Хлебные крошки"><ol><li><a href="{{ url_for('index') }}">Главная</a></li><li><a href="{{ url_for('cabinet') }}">Личный кабинет</a></li><li aria-current="page">Новый диалог</li></ol></nav>
+  <h1 class="h1-big">Написать менеджеру</h1>
+  {{ errors_box(errors) }}
+  <form method="post" action="{{ url_for('dialog_new') }}" class="form-card" novalidate>
+    {{ csrf() }}
+    {{ field('subject', 'Тема', form.subject, maxlength=120) }}
+    {{ textarea('body', 'Сообщение', form.body, rows=6, maxlength=3000) }}
+    <button class="btn" type="submit">Отправить</button>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% from "_forms.html" import errors_box, csrf, textarea %}
+{% block title %}Диалог: {{ dlg.subject }}{% endblock %}
+{% block content %}
+<div class="wrap narrow-wide">
+  <nav class="crumbs" aria-label="Хлебные крошки"><ol>
+    <li><a href="{{ url_for('index') }}">Главная</a></li>
+    {% if is_staff %}<li><a href="{{ url_for('manager_home') }}">Панель менеджера</a></li><li><a href="{{ url_for('manager_dialogs') }}">Диалоги</a></li>
+    {% else %}<li><a href="{{ url_for('cabinet') }}">Личный кабинет</a></li>{% endif %}
+    <li aria-current="page">Диалог</li>
+  </ol></nav>
+  <h1 class="h1-article">{{ dlg.subject }}</h1>
+  <p class="meta">Клиент: {{ dlg.client_name }} &middot; Статус: {{ 'открыт' if dlg.status == 'open' else 'закрыт' }} &middot; Создан {{ dlg.created_at|ru_datetime }}
+    {% if req %} &middot; Заявка: {{ STATUS_REQUEST[req.status]|lower }}{% endif %}</p>
+
+  <ol class="chat" aria-label="Сообщения диалога">
+    {% for m in msgs %}
+    <li class="msg {{ 'msg-staff' if m.role != 'client' else 'msg-client' }}{% if m.sender_id == me.id %} msg-mine{% endif %}">
+      <div class="msg-head"><strong>{{ m.full_name }}</strong> <span class="msg-role">{{ ROLE_TITLES[m.role] }}</span> <time>{{ m.created_at|ru_datetime }}</time></div>
+      <p class="msg-body">{{ m.body }}</p>
+    </li>
+    {% endfor %}
+  </ol>
+  <span id="end"></span>
+
+  {{ errors_box(errors) }}
+  {% if dlg.status == 'open' or is_staff %}
+  <form method="post" action="{{ url_for('dialog_view', dialog_id=dlg.id) }}" class="form-card chat-form" novalidate>
+    {{ csrf() }}
+    <input type="hidden" name="action" value="send">
+    {{ textarea('body', 'Ответ клиенту' if is_staff else 'Ваше сообщение', '', rows=4, maxlength=3000) }}
+    <button class="btn" type="submit">Отправить</button>
+  </form>
+  {% else %}
+  <p class="flash flash-warn">Диалог закрыт менеджером. Чтобы задать новый вопрос, <a href="{{ url_for('dialog_new') }}">создайте новый диалог</a>.</p>
+  {% endif %}
+  {% if is_staff %}
+  <form method="post" action="{{ url_for('dialog_view', dialog_id=dlg.id) }}" class="inline-form-block">
+    {{ csrf() }}
+    {% if dlg.status == 'open' %}<input type="hidden" name="action" value="close"><button class="btn btn-ghost" type="submit">Закрыть диалог</button>
+    {% else %}<input type="hidden" name="action" value="reopen"><button class="btn btn-ghost" type="submit">Открыть диалог снова</button>{% endif %}
+  </form>
+  {% endif %}
+</div>
+{% endblock %}

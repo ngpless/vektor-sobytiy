@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% from "_forms.html" import errors_box, csrf, field %}
+{% block title %}Регистрация{% endblock %}
+{% block content %}
+<div class="wrap narrow">
+  <nav class="crumbs" aria-label="Хлебные крошки"><ol><li><a href="{{ url_for('index') }}">Главная</a></li><li aria-current="page">Регистрация</li></ol></nav>
+  <h1 class="h1-big">Регистрация клиента</h1>
+  <p class="lead">После регистрации вы сможете отправлять заявки на мероприятия и общаться с менеджером в личном кабинете.</p>
+  {{ errors_box(errors) }}
+  <form method="post" action="{{ url_for('register') }}" class="form-card" novalidate>
+    {{ csrf() }}
+    {{ field('full_name', 'Имя и фамилия', form.full_name, autocomplete='name', maxlength=80) }}
+    {{ field('login', 'Логин', form.login, autocomplete='username', maxlength=30, hint='Латинские буквы, цифры и знаки _ . - (от 3 до 30 символов).') }}
+    {{ field('email', 'Электронная почта', form.email, type='email', autocomplete='email', maxlength=120) }}
+    {{ field('phone', 'Телефон', form.phone, type='tel', required=False, autocomplete='tel', maxlength=20) }}
+    {{ field('password', 'Пароль', '', type='password', autocomplete='new-password', hint='Не менее 8 символов, буквы и цифры. Пароль хранится только в виде хеша.') }}
+    {{ field('password2', 'Повторите пароль', '', type='password', autocomplete='new-password') }}
+    <button class="btn" type="submit">Зарегистрироваться</button>
+  </form>
+  <p class="muted">Уже есть учётная запись? <a href="{{ url_for('login') }}">Войти</a>.</p>
+</div>
+{% endblock %}

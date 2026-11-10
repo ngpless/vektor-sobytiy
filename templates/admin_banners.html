@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% from "_staff.html" import admin_tabs %}
+{% from "_forms.html" import errors_box, csrf, field, select %}
+{% block title %}Баннеры{% endblock %}
+{% block content %}
+<div class="wrap">
+  <nav class="crumbs" aria-label="Хлебные крошки"><ol><li><a href="{{ url_for('index') }}">Главная</a></li><li><a href="{{ url_for('admin_home') }}">Администрирование</a></li><li aria-current="page">Баннеры</li></ol></nav>
+  <h1 class="h1-big">Баннеры главной страницы</h1>
+  {{ admin_tabs('banners') }}
+  <p class="muted">Активные баннеры показываются в карусели на главной странице в порядке возрастания номера.</p>
+  {{ errors_box(errors) }}
+  {% for b in banners %}
+  <section class="form-card banner-edit" aria-labelledby="bn-{{ b.id }}">
+    <h2 id="bn-{{ b.id }}" class="h3-big">Баннер {{ loop.index }}{% if not b.is_active %} <small>(скрыт)</small>{% endif %}</h2>
+    <form method="post" action="{{ url_for('admin_banners') }}" class="grid-form" novalidate>
+      {{ csrf() }}<input type="hidden" name="action" value="update"><input type="hidden" name="id" value="{{ b.id }}">
+      <div class="field"><label for="t-{{ b.id }}">Заголовок</label><input id="t-{{ b.id }}" name="title" value="{{ b.title }}" maxlength="80"></div>
+      <div class="field"><label for="x-{{ b.id }}">Текст</label><input id="x-{{ b.id }}" name="text" value="{{ b.text }}" maxlength="200"></div>
+      <div class="field"><label for="u-{{ b.id }}">Ссылка</label><input id="u-{{ b.id }}" name="link_url" value="{{ b.link_url }}" maxlength="200"></div>
+      <div class="field"><label for="l-{{ b.id }}">Подпись кнопки</label><input id="l-{{ b.id }}" name="link_text" value="{{ b.link_text }}" maxlength="40"></div>
+      <div class="field"><label for="a-{{ b.id }}">Рисунок</label>
+        <select id="a-{{ b.id }}" name="art_key">{% for k, v in art_keys.items() %}<option value="{{ k }}"{% if k == b.art_key %} selected{% endif %}>{{ v }}</option>{% endfor %}</select></div>
+      <div class="field"><label for="p-{{ b.id }}">Порядок показа</label><input id="p-{{ b.id }}" name="position" value="{{ b.position }}" maxlength="4"></div>
+      <div class="field field-check"><label><input type="checkbox" name="is_active" value="1"{% if b.is_active %} checked{% endif %}> Показывать на сайте</label></div>
+      <div class="btn-row"><button class="btn" type="submit">Сохранить</button></div>
+    </form>
+    <form method="post" action="{{ url_for('admin_banners') }}" class="inline-form-block">
+      {{ csrf() }}<input type="hidden" name="action" value="delete"><input type="hidden" name="id" value="{{ b.id }}">
+      <button class="btn btn-small btn-ghost" type="submit">Удалить баннер</button>
+    </form>
+  </section>
+  {% endfor %}
+
+  <section class="form-card" aria-labelledby="bn-new">
+    <h2 id="bn-new" class="h2-big">Добавить баннер</h2>
+    <form method="post" action="{{ url_for('admin_banners') }}" class="grid-form" novalidate>
+      {{ csrf() }}<input type="hidden" name="action" value="create">
+      <div class="field"><label for="nt">Заголовок</label><input id="nt" name="title" maxlength="80"></div>
+      <div class="field"><label for="nx">Текст</label><input id="nx" name="text" maxlength="200"></div>
+      <div class="field"><label for="nu">Ссылка</label><input id="nu" name="link_url" value="/" maxlength="200"></div>
+      <div class="field"><label for="nl">Подпись кнопки</label><input id="nl" name="link_text" value="Подробнее" maxlength="40"></div>
+      <div class="field"><label for="na">Рисунок</label>
+        <select id="na" name="art_key">{% for k, v in art_keys.items() %}<option value="{{ k }}">{{ v }}</option>{% endfor %}</select></div>
+      <div class="field"><label for="np">Порядок показа</label><input id="np" name="position" value="10" maxlength="4"></div>
+      <div class="field field-check"><label><input type="checkbox" name="is_active" value="1" checked> Показывать на сайте</label></div>
+      <div class="btn-row"><button class="btn" type="submit">Добавить</button></div>
+    </form>
+  </section>
+</div>
+{% endblock %}

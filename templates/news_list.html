@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Новости{% endblock %}
+{% block description %}Лента новостей event-агентства «Вектор событий»: запись на корпоративы, новое оборудование, форматы и обновления сайта.{% endblock %}
+{% block content %}
+<div class="wrap">
+  <nav class="crumbs" aria-label="Хлебные крошки"><ol><li><a href="{{ url_for('index') }}">Главная</a></li><li aria-current="page">Новости</li></ol></nav>
+  <h1 class="h1-big">Новости агентства</h1>
+  <p class="lead">Лента обновляется менеджерами из личного кабинета. Всего новостей: {{ total }}.</p>
+  <ul class="news-grid">
+    {% for n in items %}
+    <li class="card news-card">
+      <time datetime="{{ n.published_at[:10] }}">{{ n.published_at|ru_date }}</time>
+      <h2 class="card-title"><a href="{{ url_for('news_item', slug=n.slug) }}">{{ n.title }}</a></h2>
+      <p>{{ n.summary }}</p>
+      <a class="card-more" href="{{ url_for('news_item', slug=n.slug) }}">Читать новость &rarr;</a>
+    </li>
+    {% endfor %}
+  </ul>
+  {% if pages > 1 %}
+  <nav class="pagination" aria-label="Страницы ленты новостей">
+    {% if page > 1 %}<a href="{{ url_for('news_list', page=page-1) }}">&larr; Назад</a>{% endif %}
+    {% for p in range(1, pages + 1) %}
+      {% if p == page %}<span aria-current="page" class="is-current">{{ p }}</span>{% else %}<a href="{{ url_for('news_list', page=p) }}">{{ p }}</a>{% endif %}
+    {% endfor %}
+    {% if page < pages %}<a href="{{ url_for('news_list', page=page+1) }}">Вперёд &rarr;</a>{% endif %}
+  </nav>
+  {% endif %}
+</div>
+{% endblock %}

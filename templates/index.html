@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% from "_art.html" import art, glyph %}
+{% block title %}Главная{% endblock %}
+{% block content %}
+
+{% if banners %}
+<section class="carousel" data-carousel aria-roledescription="карусель" aria-label="Баннеры агентства">
+  <div class="slides" aria-live="off">
+    {% for b in banners %}
+    <article class="slide{% if loop.first %} is-active{% endif %}" aria-roledescription="слайд" aria-label="{{ loop.index }} из {{ banners|length }}"{% if not loop.first %} hidden{% endif %}>
+      {{ art(b.art_key, ART_KEYS.get(b.art_key, 'Иллюстрация'), 'slide-art') }}
+      <div class="slide-text wrap">
+        <div class="slide-card">
+          <p class="eyebrow">Вектор событий</p>
+          <h2>{{ b.title }}</h2>
+          <p>{{ b.text }}</p>
+          <a class="btn" href="{{ b.link_url }}">{{ b.link_text }}</a>
+        </div>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+  {% if banners|length > 1 %}
+  <div class="carousel-controls wrap">
+    <button type="button" class="car-btn" data-car-prev aria-label="Предыдущий баннер">&#8592;</button>
+    <div class="car-dots" role="group" aria-label="Выбор баннера">
+      {% for b in banners %}<button type="button" class="car-dot{% if loop.first %} is-active{% endif %}" data-car-dot="{{ loop.index0 }}" aria-label="Баннер {{ loop.index }}"{% if loop.first %} aria-current="true"{% endif %}></button>{% endfor %}
+    </div>
+    <button type="button" class="car-btn" data-car-next aria-label="Следующий баннер">&#8594;</button>
+    <button type="button" class="car-btn car-pause" data-car-pause aria-pressed="false">Пауза</button>
+  </div>
+  {% endif %}
+</section>
+{% endif %}
+
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <h1 class="h1-big">Мероприятия, у которых есть сценарий и цель</h1>
+      <p class="lead">«Вектор событий» — учебная модель event-агентства: от идеи и бюджета до монтажа звука и света. На сайте собраны практические материалы по пяти направлениям и инструменты для общения с менеджером.</p>
+    </div>
+    <ul class="card-grid card-grid-5">
+      {% for s in sections %}
+      <li class="card dir-card">
+        <a class="card-link" href="{{ url_for('section', slug=s.slug) }}">
+          <span class="dir-icon">{{ glyph(s.art_key) }}</span>
+          <h2 class="card-title">{{ s.title }}</h2>
+          <p>{{ s.description }}</p>
+          <span class="card-more">Материалов: {{ s.cnt }} &rarr;</span>
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+</section>
+
+<section class="section section-dark">
+  <div class="wrap">
+    <h2 class="h2-big">Как мы работаем</h2>
+    <ol class="steps">
+      <li><span class="step-num">1</span><h3>Заявка</h3><p>Регистрируетесь и описываете мероприятие в личном кабинете.</p></li>
+      <li><span class="step-num">2</span><h3>Диалог</h3><p>Менеджер отвечает в диалоге, уточняет цель, дату и бюджет.</p></li>
+      <li><span class="step-num">3</span><h3>Сценарий и смета</h3><p>Согласуем площадку, программу, технику и тайминг.</p></li>
+      <li><span class="step-num">4</span><h3>Проведение</h3><p>Координатор и техническая группа работают на площадке.</p></li>
+    </ol>
+    <ul class="stats">
+      <li><strong>{{ stats.sections }}</strong><span>направлений работы</span></li>
+      <li><strong>{{ stats.articles }}</strong><span>практических статей</span></li>
+      <li><strong>{{ stats.news }}</strong><span>новостей в ленте</span></li>
+      <li><strong>3</strong><span>роли в личном кабинете</span></li>
+    </ul>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap two-col">
+    <div>
+      <div class="section-row">
+        <h2 class="h2-big">Свежие новости</h2>
+        <a class="more-link" href="{{ url_for('news_list') }}">Все новости &rarr;</a>
+      </div>
+      <ul class="news-list">
+        {% for n in latest_news %}
+        <li class="news-item">
+          <time datetime="{{ n.published_at[:10] }}">{{ n.published_at|ru_date }}</time>
+          <h3><a href="{{ url_for('news_item', slug=n.slug) }}">{{ n.title }}</a></h3>
+          <p>{{ n.summary }}</p>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    <aside class="side-box" aria-labelledby="fresh-h">
+      <h2 id="fresh-h" class="h3-big">Новые статьи</h2>
+      <ul class="plain-list">
+        {% for a in fresh_articles %}
+        <li><a href="{{ url_for('article', slug=a.section_slug, article_slug=a.slug) }}">{{ a.title }}</a><small>{{ a.section_title }}</small></li>
+        {% endfor %}
+      </ul>
+      <div class="cta-box">
+        <h3>Нужен расчёт?</h3>
+        <p>Отправьте заявку из личного кабинета, и менеджер ответит в диалоге.</p>
+        {% if me and me.role == 'client' %}
+        <a class="btn" href="{{ url_for('request_new') }}">Отправить заявку</a>
+        {% elif me %}
+        <a class="btn" href="{{ url_for('cabinet') }}">Открыть кабинет</a>
+        {% else %}
+        <a class="btn" href="{{ url_for('register') }}">Зарегистрироваться</a>
+        {% endif %}
+      </div>
+    </aside>
+  </div>
+</section>
+{% endblock %}

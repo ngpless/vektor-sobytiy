@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}{{ item.title }}{% endblock %}
+{% block description %}{{ item.summary }}{% endblock %}
+{% block content %}
+<div class="wrap">
+  <nav class="crumbs" aria-label="Хлебные крошки"><ol>
+    <li><a href="{{ url_for('index') }}">Главная</a></li>
+    <li><a href="{{ url_for('news_list') }}">Новости</a></li>
+    <li aria-current="page">{{ item.title }}</li>
+  </ol></nav>
+</div>
+<div class="wrap article-layout">
+  <article class="article">
+    <header>
+      <p class="eyebrow-dark"><time datetime="{{ item.published_at[:10] }}">{{ item.published_at|ru_date }}</time></p>
+      <h1 class="h1-article">{{ item.title }}</h1>
+      <p class="lead">{{ item.summary }}</p>
+    </header>
+    <div class="prose">
+      {% for kind, content in item.body|blocks %}
+        {% if kind == 'h2' %}<h2>{{ content }}</h2>
+        {% elif kind == 'ul' %}<ul>{% for li in content %}<li>{{ li }}</li>{% endfor %}</ul>
+        {% elif kind == 'quote' %}<blockquote>{{ content }}</blockquote>
+        {% else %}<p>{{ content }}</p>{% endif %}
+      {% endfor %}
+    </div>
+    <p><a class="more-link" href="{{ url_for('news_list') }}">&larr; Все новости</a></p>
+  </article>
+  <aside class="article-side">
+    <div class="side-box">
+      <h2 class="h3-big">Другие новости</h2>
+      <ul class="plain-list">
+        {% for m in more %}<li><a href="{{ url_for('news_item', slug=m.slug) }}">{{ m.title }}</a><small>{{ m.published_at|ru_date }}</small></li>{% endfor %}
+      </ul>
+    </div>
+  </aside>
+</div>
+{% endblock %}

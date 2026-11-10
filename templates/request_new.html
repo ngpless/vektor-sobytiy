@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% from "_forms.html" import errors_box, csrf, field, textarea, select %}
+{% block title %}Заявка на мероприятие{% endblock %}
+{% block content %}
+<div class="wrap narrow">
+  <nav class="crumbs" aria-label="Хлебные крошки"><ol><li><a href="{{ url_for('index') }}">Главная</a></li><li><a href="{{ url_for('cabinet') }}">Личный кабинет</a></li><li aria-current="page">Заявка</li></ol></nav>
+  <h1 class="h1-big">Заявка на мероприятие</h1>
+  <p class="lead">После отправки заявки автоматически откроется диалог с менеджером.</p>
+  {{ errors_box(errors) }}
+  <form method="post" action="{{ url_for('request_new') }}" class="form-card" novalidate>
+    {{ csrf() }}
+    {{ select('event_type', 'Тип мероприятия', event_types, form.event_type) }}
+    {{ field('event_date', 'Дата мероприятия', form.event_date, type='date', attrs='min="' ~ today ~ '"') }}
+    {{ field('guests', 'Количество гостей', form.guests, type='number', attrs='min="1" max="5000"') }}
+    {{ field('budget', 'Ориентировочный бюджет', form.budget, required=False, maxlength=60, hint='Например: 300 тысяч рублей. Можно оставить пустым.') }}
+    {{ textarea('comment', 'Пожелания и комментарий', form.comment, rows=5, required=False, maxlength=1500) }}
+    <button class="btn" type="submit">Отправить заявку</button>
+  </form>
+</div>
+{% endblock %}

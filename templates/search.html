@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Поиск{% if q %}: {{ q }}{% endif %}{% endblock %}
+{% block content %}
+<div class="wrap">
+  <nav class="crumbs" aria-label="Хлебные крошки"><ol><li><a href="{{ url_for('index') }}">Главная</a></li><li aria-current="page">Поиск</li></ol></nav>
+  <h1 class="h1-big">Поиск по сайту</h1>
+  <form class="search-page-form" action="{{ url_for('search') }}" method="get" role="search">
+    <label for="q-main" class="visually-hidden">Запрос</label>
+    <input type="search" id="q-main" name="q" value="{{ q }}" maxlength="100" placeholder="Например: свет, площадка, тайминг">
+    <button class="btn" type="submit">Найти</button>
+  </form>
+
+  {% if not q %}
+    <p class="muted">Введите слово или фразу: поиск идёт по заголовкам и текстам всех статей и новостей.</p>
+  {% else %}
+    <p class="search-summary" role="status">По запросу «<strong>{{ q }}</strong>» найдено: статей — {{ articles|length }}, новостей — {{ news|length }}.</p>
+    {% if not articles and not news %}
+      <div class="empty-state">
+        <h2>Ничего не найдено</h2>
+        <p>Попробуйте изменить запрос: использовать корень слова (например, «площад» вместо «площадками»), убрать лишние слова или проверить раскладку клавиатуры.</p>
+        <p>Или посмотрите <a href="{{ url_for('sitemap') }}">карту сайта</a>, чтобы найти нужный раздел.</p>
+      </div>
+    {% endif %}
+    {% if articles %}
+    <h2 class="h2-big">Статьи</h2>
+    <ul class="result-list">
+      {% for a in articles %}
+      <li>
+        <h3><a href="{{ url_for('article', slug=a.section_slug, article_slug=a.slug) }}">{{ a.title }}</a></h3>
+        <p class="result-meta">{{ a.section_title }} &middot; {{ a.published_at|ru_date }}</p>
+        <p>{{ highlight(a.body if q.lower() in a.body.lower() and q.lower() not in a.summary.lower() else a.summary, q) }}</p>
+      </li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+    {% if news %}
+    <h2 class="h2-big">Новости</h2>
+    <ul class="result-list">
+      {% for n in news %}
+      <li>
+        <h3><a href="{{ url_for('news_item', slug=n.slug) }}">{{ n.title }}</a></h3>
+        <p class="result-meta">Новость &middot; {{ n.published_at|ru_date }}</p>
+        <p>{{ highlight(n.body if q.lower() in n.body.lower() and q.lower() not in n.summary.lower() else n.summary, q) }}</p>
+      </li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+  {% endif %}
+</div>
+{% endblock %}

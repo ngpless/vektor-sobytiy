@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% from "_staff.html" import admin_tabs %}
+{% from "_forms.html" import errors_box, csrf, field, select %}
+{% block title %}Пользователи и роли{% endblock %}
+{% block content %}
+<div class="wrap">
+  <nav class="crumbs" aria-label="Хлебные крошки"><ol><li><a href="{{ url_for('index') }}">Главная</a></li><li><a href="{{ url_for('admin_home') }}">Администрирование</a></li><li aria-current="page">Пользователи и роли</li></ol></nav>
+  <h1 class="h1-big">Пользователи и роли</h1>
+  {{ admin_tabs('users') }}
+  {% if created %}
+  <div class="credentials" role="status">
+    <h2 class="h3-big">Пользователь создан</h2>
+    <p>Пароль показывается один раз. При первом входе пользователь обязан его сменить.</p>
+    <dl class="facts">
+      <dt>Имя</dt><dd>{{ created.full_name }} ({{ created.role }})</dd>
+      <dt>Логин</dt><dd><code>{{ created.login }}</code></dd>
+      <dt>Временный пароль</dt><dd><code>{{ created.password }}</code></dd>
+    </dl>
+  </div>
+  {% endif %}
+  <table class="table table-wide users-table">
+    <thead><tr><th scope="col">Пользователь</th><th scope="col">Логин</th><th scope="col">Роль</th><th scope="col">Создан</th><th scope="col">Состояние</th></tr></thead>
+    <tbody>
+    {% for u in users %}
+    <tr>
+      <td>{{ u.full_name }}<br><small>{{ u.email }}</small></td>
+      <td>{{ u.login }}</td>
+      <td>
+        <form method="post" action="{{ url_for('admin_users') }}" class="inline-select">
+          {{ csrf() }}<input type="hidden" name="action" value="role"><input type="hidden" name="id" value="{{ u.id }}">
+          <label class="visually-hidden" for="role-{{ u.id }}">Роль пользователя {{ u.login }}</label>
+          <select id="role-{{ u.id }}" name="role">
+            {% for key, title in ROLE_TITLES.items() %}<option value="{{ key }}"{% if key == u.role %} selected{% endif %}>{{ title }}</option>{% endfor %}
+          </select>
+          <button class="btn btn-small" type="submit">Назначить</button>
+        </form>
+      </td>
+      <td>{{ u.created_at|ru_date }}<br><small>{% if u.creator %}сотрудником: {{ u.creator.split(' ')[0] }}{% else %}самостоятельно или при установке{% endif %}</small></td>
+      <td>
+        <form method="post" action="{{ url_for('admin_users') }}" class="inline-form-block">
+          {{ csrf() }}<input type="hidden" name="action" value="active"><input type="hidden" name="id" value="{{ u.id }}">
+          <span class="status status-{{ 'done' if u.is_active else 'rejected' }}">{{ 'активен' if u.is_active else 'отключён' }}</span>
+          <button class="btn btn-small btn-ghost" type="submit">{{ 'Отключить' if u.is_active else 'Включить' }}</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+
+  <section class="form-card" aria-labelledby="au-new">
+    <h2 id="au-new" class="h2-big">Создать пользователя</h2>
+    {{ errors_box(errors) }}
+    <form method="post" action="{{ url_for('admin_users') }}" class="grid-form" novalidate>
+      {{ csrf() }}<input type="hidden" name="action" value="create">
+      {{ field('full_name', 'Имя и фамилия', form.full_name, maxlength=80) }}
+      {{ field('login', 'Логин', form.login, maxlength=30, hint='Латинские буквы, цифры и знаки _ . -') }}
+      {{ field('email', 'Электронная почта', form.email, type='email', maxlength=120) }}
+      {{ field('phone', 'Телефон', form.phone, type='tel', required=False, maxlength=20) }}
+      {{ select('role', 'Роль', ROLE_TITLES.items()|list, form.role) }}
+      {{ field('password', 'Временный пароль', '', required=False, hint='Пусто — пароль создастся автоматически.') }}
+      <div><button class="btn" type="submit">Создать</button></div>
+    </form>
+  </section>
+</div>
+{% endblock %}

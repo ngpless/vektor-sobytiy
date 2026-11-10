@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% from "_art.html" import art, glyph %}
+{% block title %}{{ sec.title }}{% endblock %}
+{% block description %}{{ sec.description }}{% endblock %}
+{% block content %}
+<div class="wrap">
+  <nav class="crumbs" aria-label="Хлебные крошки"><ol><li><a href="{{ url_for('index') }}">Главная</a></li><li aria-current="page">{{ sec.title }}</li></ol></nav>
+</div>
+<section class="section-hero">
+  <div class="wrap hero-grid">
+    <div>
+      <h1 class="h1-big">{{ sec.title }}</h1>
+      <p class="lead">{{ sec.description }}</p>
+      <p class="muted">В разделе {{ articles|length }} статей. Выберите материал или воспользуйтесь <a href="{{ url_for('search') }}">поиском по сайту</a>.</p>
+    </div>
+    {{ art(sec.art_key, sec.short_title, 'hero-art') }}
+  </div>
+</section>
+<div class="wrap">
+  <ol class="article-grid">
+    {% for a in articles %}
+    <li class="card art-card">
+      <a class="card-link" href="{{ url_for('article', slug=sec.slug, article_slug=a.slug) }}">
+        <span class="art-num">{{ '%02d' % loop.index }}</span>
+        <h2 class="card-title">{{ a.title }}</h2>
+        <p>{{ a.summary }}</p>
+        <span class="card-meta">{{ a.published_at|ru_date }} &middot; {{ a.body|reading_time }} мин чтения</span>
+      </a>
+    </li>
+    {% endfor %}
+  </ol>
+  <nav class="other-sections" aria-label="Другие разделы">
+    <h2 class="h3-big">Другие разделы</h2>
+    <ul class="chips">
+      {% for s in nav_sections if s.slug != sec.slug %}<li><a href="{{ url_for('section', slug=s.slug) }}">{{ s.title }}</a></li>{% endfor %}
+    </ul>
+  </nav>
+</div>
+{% endblock %}

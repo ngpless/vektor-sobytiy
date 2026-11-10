@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% from "_staff.html" import manager_tabs %}
+{% from "_forms.html" import errors_box, csrf, field, textarea, select %}
+{% block title %}Публикация{% endblock %}
+{% block content %}
+<div class="wrap">
+  <nav class="crumbs" aria-label="Хлебные крошки"><ol><li><a href="{{ url_for('index') }}">Главная</a></li><li><a href="{{ url_for('manager_home') }}">Панель менеджера</a></li><li aria-current="page">Публикация</li></ol></nav>
+  <h1 class="h1-big">Публикация материалов</h1>
+  {{ manager_tabs('publish') }}
+  <p class="filter-line">Тип материала:
+    <a href="{{ url_for('manager_publish', kind='article') }}" {% if kind == 'article' %}aria-current="true"{% endif %}>статья в раздел</a> &middot;
+    <a href="{{ url_for('manager_publish', kind='news') }}" {% if kind == 'news' %}aria-current="true"{% endif %}>новость в ленту</a></p>
+  <div class="two-col">
+    <section class="form-card" aria-labelledby="pub-h">
+      <h2 id="pub-h" class="h2-big">{{ 'Новая статья' if kind == 'article' else 'Новая новость' }}</h2>
+      {{ errors_box(errors) }}
+      <form method="post" action="{{ url_for('manager_publish') }}" novalidate>
+        {{ csrf() }}
+        <input type="hidden" name="kind" value="{{ kind }}">
+        {% if kind == 'article' %}
+        {{ select('section_id', 'Раздел', sec_options, form.section_id) }}
+        {% endif %}
+        {{ field('title', 'Заголовок', form.title, maxlength=140) }}
+        {{ textarea('summary', 'Краткое описание (анонс)', form.summary, rows=2, maxlength=300) }}
+        {{ textarea('body', 'Текст', form.body, rows=12, maxlength=12000, hint='Абзацы разделяйте пустой строкой. «## Заголовок» — подзаголовок, «- пункт» — элемент списка.') }}
+        <button class="btn" type="submit">Опубликовать</button>
+      </form>
+    </section>
+    <aside class="side-box">
+      <h2 class="h3-big">Подсказка по оформлению</h2>
+      <p>Текст хранится в простой разметке и всегда экранируется при показе, поэтому HTML-теги в нём работать не будут.</p>
+      <pre class="code-sample">Первый абзац.
+
+## Подзаголовок
+
+- пункт списка
+- ещё пункт</pre>
+      <p><a href="{{ url_for('manager_content') }}">Управление опубликованными материалами &rarr;</a></p>
+    </aside>
+  </div>
+</div>
+{% endblock %}

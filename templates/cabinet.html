@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Личный кабинет{% endblock %}
+{% block content %}
+<div class="wrap">
+  <nav class="crumbs" aria-label="Хлебные крошки"><ol><li><a href="{{ url_for('index') }}">Главная</a></li><li aria-current="page">Личный кабинет</li></ol></nav>
+  <h1 class="h1-big">Личный кабинет клиента</h1>
+  <p class="lead">{{ me.full_name }} &middot; логин {{ me.login }} &middot; {{ me.email }}</p>
+  <p class="actions">
+    <a class="btn" href="{{ url_for('request_new') }}">Новая заявка на мероприятие</a>
+    <a class="btn btn-ghost" href="{{ url_for('dialog_new') }}">Написать менеджеру</a>
+    <a class="btn btn-ghost" href="{{ url_for('password_change') }}">Сменить пароль</a>
+  </p>
+  <div class="two-col">
+    <section aria-labelledby="my-dialogs">
+      <h2 id="my-dialogs" class="h2-big">Диалоги с менеджером</h2>
+      {% if dialogs %}
+      <ul class="dialog-list">
+        {% for d in dialogs %}
+        <li class="dialog-row">
+          <a href="{{ url_for('dialog_view', dialog_id=d.id) }}">{{ d.subject }}</a>
+          <span class="dialog-meta">{{ d.updated_at|ru_datetime }} &middot; {{ 'открыт' if d.status == 'open' else 'закрыт' }}</span>
+          {% if d.unread %}<span class="badge" aria-label="Новых ответов: {{ d.unread }}">{{ d.unread }}</span>{% endif %}
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <div class="empty-state"><p>Диалогов пока нет. Отправьте заявку или напишите менеджеру, и здесь появится переписка.</p></div>
+      {% endif %}
+    </section>
+    <section aria-labelledby="my-requests">
+      <h2 id="my-requests" class="h2-big">Мои заявки</h2>
+      {% if requests_ %}
+      <table class="table">
+        <thead><tr><th scope="col">Мероприятие</th><th scope="col">Дата</th><th scope="col">Гостей</th><th scope="col">Статус</th></tr></thead>
+        <tbody>
+        {% for r in requests_ %}
+        <tr><td>{{ r.event_type }}</td><td>{{ r.event_date|ru_date }}</td><td>{{ r.guests }}</td><td><span class="status status-{{ r.status }}">{{ STATUS_REQUEST[r.status] }}</span></td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div class="empty-state"><p>Заявок пока нет.</p></div>
+      {% endif %}
+    </section>
+  </div>
+</div>
+{% endblock %}

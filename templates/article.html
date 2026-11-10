@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% from "_art.html" import art as draw %}
+{% block title %}{{ art.title }}{% endblock %}
+{% block description %}{{ art.summary }}{% endblock %}
+{% block content %}
+<div class="wrap">
+  <nav class="crumbs" aria-label="Хлебные крошки"><ol>
+    <li><a href="{{ url_for('index') }}">Главная</a></li>
+    <li><a href="{{ url_for('section', slug=sec.slug) }}">{{ sec.title }}</a></li>
+    <li aria-current="page">{{ art.title }}</li>
+  </ol></nav>
+</div>
+<div class="wrap article-layout">
+  <article class="article">
+    <header>
+      <p class="eyebrow-dark">{{ sec.title }}</p>
+      <h1 class="h1-article">{{ art.title }}</h1>
+      <p class="lead">{{ art.summary }}</p>
+      <p class="meta">{{ art.published_at|ru_date }} &middot; {{ art.body|reading_time }} мин чтения{% if author %} &middot; Автор: {{ author.full_name }}{% endif %}</p>
+    </header>
+    <figure class="article-figure">
+      {{ draw(sec.art_key, sec.short_title) }}
+      <figcaption>Рисунок. Иллюстрация раздела «{{ sec.short_title }}» (авторская, нарисована в коде).</figcaption>
+    </figure>
+    <div class="prose">
+      {% for kind, content in art.body|blocks %}
+        {% if kind == 'h2' %}<h2>{{ content }}</h2>
+        {% elif kind == 'ul' %}<ul>{% for li in content %}<li>{{ li }}</li>{% endfor %}</ul>
+        {% elif kind == 'quote' %}<blockquote>{{ content }}</blockquote>
+        {% else %}<p>{{ content }}</p>{% endif %}
+      {% endfor %}
+    </div>
+    <nav class="pager" aria-label="Соседние статьи раздела">
+      {% if prev_a %}<a class="pager-prev" href="{{ url_for('article', slug=sec.slug, article_slug=prev_a.slug) }}"><small>&larr; Предыдущая</small>{{ prev_a.title }}</a>{% else %}<span></span>{% endif %}
+      {% if next_a %}<a class="pager-next" href="{{ url_for('article', slug=sec.slug, article_slug=next_a.slug) }}"><small>Следующая &rarr;</small>{{ next_a.title }}</a>{% else %}<span></span>{% endif %}
+    </nav>
+  </article>
+  <aside class="article-side">
+    <div class="side-box">
+      <h2 class="h3-big">В этом разделе</h2>
+      <ul class="plain-list">
+        {% for s in siblings %}<li>{% if s.slug == art.slug %}<strong>{{ s.title }}</strong>{% else %}<a href="{{ url_for('article', slug=sec.slug, article_slug=s.slug) }}">{{ s.title }}</a>{% endif %}</li>{% endfor %}
+      </ul>
+    </div>
+    <div class="side-box">
+      <h2 class="h3-big">Читайте также</h2>
+      <ul class="plain-list">
+        {% for o in others %}<li><a href="{{ url_for('article', slug=o.section_slug, article_slug=o.slug) }}">{{ o.title }}</a><small>{{ o.short_title }}</small></li>{% endfor %}
+      </ul>
+    </div>
+    <div class="cta-box">
+      <h3>Обсудить мероприятие</h3>
+      <p>Задайте вопрос менеджеру или отправьте заявку.</p>
+      <a class="btn btn-block" href="{{ url_for('contacts') }}">Связаться</a>
+    </div>
+  </aside>
+</div>
+{% endblock %}

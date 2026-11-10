@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% from "_staff.html" import admin_tabs %}
+{% block title %}Администрирование{% endblock %}
+{% block content %}
+<div class="wrap">
+  <nav class="crumbs" aria-label="Хлебные крошки"><ol><li><a href="{{ url_for('index') }}">Главная</a></li><li aria-current="page">Администрирование</li></ol></nav>
+  <h1 class="h1-big">Панель администратора</h1>
+  <p class="lead">{{ me.full_name }}, роль: {{ ROLE_TITLES[me.role] }}.</p>
+  {{ admin_tabs('home') }}
+  <ul class="stat-cards">
+    <li><a href="{{ url_for('admin_users') }}"><strong>{{ counts.users }}</strong><span>пользователей</span></a></li>
+    <li><a href="{{ url_for('admin_banners') }}"><strong>{{ counts.banners }}</strong><span>активных баннеров</span></a></li>
+    <li><a href="{{ url_for('manager_content') }}"><strong>{{ counts.articles }}</strong><span>статей</span></a></li>
+    <li><a href="{{ url_for('manager_content') }}"><strong>{{ counts.news }}</strong><span>новостей</span></a></li>
+  </ul>
+  <h2 class="h2-big">Роли и права</h2>
+  <table class="table table-wide roles-table">
+    <thead><tr><th scope="col">Возможность</th><th scope="col">Гость</th><th scope="col">Клиент</th><th scope="col">Менеджер</th><th scope="col">Администратор</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">Просмотр страниц, поиск, форма обратной связи</th><td>да</td><td>да</td><td>да</td><td>да</td></tr>
+      <tr><th scope="row">Самостоятельная регистрация</th><td>да</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td></tr>
+      <tr><th scope="row">Личный кабинет, заявка на мероприятие</th><td>&mdash;</td><td>да</td><td>&mdash;</td><td>&mdash;</td></tr>
+      <tr><th scope="row">Диалог со своим менеджером</th><td>&mdash;</td><td>да (свои)</td><td>&mdash;</td><td>&mdash;</td></tr>
+      <tr><th scope="row">Входящие диалоги и заявки, ответы</th><td>&mdash;</td><td>&mdash;</td><td>да (все)</td><td>да (все)</td></tr>
+      <tr><th scope="row">Создание учётных записей клиентов</th><td>&mdash;</td><td>&mdash;</td><td>да</td><td>да</td></tr>
+      <tr><th scope="row">Публикация статей и новостей</th><td>&mdash;</td><td>&mdash;</td><td>да</td><td>да</td></tr>
+      <tr><th scope="row">Пользователи и роли</th><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>да</td></tr>
+      <tr><th scope="row">Баннеры</th><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>да</td></tr>
+    </tbody>
+  </table>
+  <p class="muted">Пользователей по ролям: клиентов {{ by_role.get('client', 0) }}, менеджеров {{ by_role.get('manager', 0) }}, администраторов {{ by_role.get('admin', 0) }}.</p>
+</div>
+{% endblock %}

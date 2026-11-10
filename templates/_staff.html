@@ -1,0 +1,20 @@
+{% macro manager_tabs(active) %}
+<nav class="tabs" aria-label="Разделы панели менеджера">
+  <a href="{{ url_for('manager_home') }}" {% if active == 'home' %}aria-current="page"{% endif %}>Обзор</a>
+  <a href="{{ url_for('manager_dialogs') }}" {% if active == 'dialogs' %}aria-current="page"{% endif %}>Диалоги{% if unread %} <span class="badge">{{ unread }}</span>{% endif %}</a>
+  <a href="{{ url_for('manager_requests') }}" {% if active == 'requests' %}aria-current="page"{% endif %}>Заявки</a>
+  <a href="{{ url_for('manager_clients') }}" {% if active == 'clients' %}aria-current="page"{% endif %}>Клиенты</a>
+  <a href="{{ url_for('manager_publish') }}" {% if active == 'publish' %}aria-current="page"{% endif %}>Публикация</a>
+  <a href="{{ url_for('manager_content') }}" {% if active == 'content' %}aria-current="page"{% endif %}>Материалы</a>
+  <a href="{{ url_for('manager_feedback') }}" {% if active == 'feedback' %}aria-current="page"{% endif %}>Обращения</a>
+</nav>
+{% endmacro %}
+
+{% macro admin_tabs(active) %}
+<nav class="tabs" aria-label="Разделы администрирования">
+  <a href="{{ url_for('admin_home') }}" {% if active == 'home' %}aria-current="page"{% endif %}>Обзор</a>
+  <a href="{{ url_for('admin_users') }}" {% if active == 'users' %}aria-current="page"{% endif %}>Пользователи и роли</a>
+  <a href="{{ url_for('admin_banners') }}" {% if active == 'banners' %}aria-current="page"{% endif %}>Баннеры</a>
+  <a href="{{ url_for('manager_home') }}">Панель менеджера</a>
+</nav>
+{% endmacro %}

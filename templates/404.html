@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% from "_art.html" import art %}
+{% block title %}Страница не найдена{% endblock %}
+{% block content %}
+<div class="wrap notfound">
+  <div>
+    <p class="code-big" aria-hidden="true">404</p>
+    <h1 class="h1-big">Такой страницы нет</h1>
+    <p class="lead">Возможно, адрес набран с ошибкой или материал был перемещён. Код ответа сервера: 404 — страница не найдена.</p>
+    <form class="search-page-form" action="{{ url_for('search') }}" method="get" role="search">
+      <label for="q-404" class="visually-hidden">Поиск по сайту</label>
+      <input type="search" id="q-404" name="q" maxlength="100" placeholder="Найти по сайту">
+      <button class="btn" type="submit">Найти</button>
+    </form>
+    <p class="actions">
+      <a class="btn" href="{{ url_for('index') }}">На главную</a>
+      <a class="btn btn-ghost" href="{{ url_for('sitemap') }}">Карта сайта</a>
+    </p>
+    <h2 class="h3-big">Популярные разделы</h2>
+    <ul class="chips">
+      {% for s in nav_sections %}<li><a href="{{ url_for('section', slug=s.slug) }}">{{ s.title }}</a></li>{% endfor %}
+    </ul>
+  </div>
+  {{ art('confetti', 'Геометрическая композиция страницы 404', 'nf-art') }}
+</div>
+{% endblock %}

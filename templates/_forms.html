@@ -1,0 +1,35 @@
+{% macro errors_box(errors) %}
+{% if errors %}
+<div class="form-errors" role="alert">
+  <p><strong>Форма заполнена с ошибками:</strong></p>
+  <ul>{% for e in errors %}<li>{{ e }}</li>{% endfor %}</ul>
+</div>
+{% endif %}
+{% endmacro %}
+
+{% macro csrf() %}<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">{% endmacro %}
+
+{% macro field(name, label, value='', type='text', required=True, hint='', autocomplete='off', maxlength=None, attrs='') %}
+<div class="field">
+  <label for="f-{{ name }}">{{ label }}{% if required %} <span class="req" aria-hidden="true">*</span>{% endif %}</label>
+  <input type="{{ type }}" id="f-{{ name }}" name="{{ name }}" value="{{ value }}" autocomplete="{{ autocomplete }}"{% if required %} required{% endif %}{% if maxlength %} maxlength="{{ maxlength }}"{% endif %}{% if hint %} aria-describedby="h-{{ name }}"{% endif %} {{ attrs|safe }}>
+  {% if hint %}<small class="hint" id="h-{{ name }}">{{ hint }}</small>{% endif %}
+</div>
+{% endmacro %}
+
+{% macro textarea(name, label, value='', rows=5, required=True, hint='', maxlength=None) %}
+<div class="field">
+  <label for="f-{{ name }}">{{ label }}{% if required %} <span class="req" aria-hidden="true">*</span>{% endif %}</label>
+  <textarea id="f-{{ name }}" name="{{ name }}" rows="{{ rows }}"{% if required %} required{% endif %}{% if maxlength %} maxlength="{{ maxlength }}"{% endif %}{% if hint %} aria-describedby="h-{{ name }}"{% endif %}>{{ value }}</textarea>
+  {% if hint %}<small class="hint" id="h-{{ name }}">{{ hint }}</small>{% endif %}
+</div>
+{% endmacro %}
+
+{% macro select(name, label, options, selected='', required=True) %}
+<div class="field">
+  <label for="f-{{ name }}">{{ label }}{% if required %} <span class="req" aria-hidden="true">*</span>{% endif %}</label>
+  <select id="f-{{ name }}" name="{{ name }}"{% if required %} required{% endif %}>
+    {% for o in options %}{% set val = o if o is string else o[0] %}{% set text = o if o is string else o[1] %}<option value="{{ val }}"{% if val|string == selected|string %} selected{% endif %}>{{ text }}</option>{% endfor %}
+  </select>
+</div>
+{% endmacro %}

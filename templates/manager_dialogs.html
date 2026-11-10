@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% from "_staff.html" import manager_tabs %}
+{% block title %}Входящие диалоги{% endblock %}
+{% block content %}
+<div class="wrap">
+  <nav class="crumbs" aria-label="Хлебные крошки"><ol><li><a href="{{ url_for('index') }}">Главная</a></li><li><a href="{{ url_for('manager_home') }}">Панель менеджера</a></li><li aria-current="page">Диалоги</li></ol></nav>
+  <h1 class="h1-big">Входящие диалоги</h1>
+  {{ manager_tabs('dialogs') }}
+  <p class="filter-line">Показать:
+    <a href="{{ url_for('manager_dialogs') }}" {% if show != 'all' %}aria-current="true"{% endif %}>открытые</a> &middot;
+    <a href="{{ url_for('manager_dialogs', show='all') }}" {% if show == 'all' %}aria-current="true"{% endif %}>все</a></p>
+  {% if rows %}
+  <table class="table table-wide">
+    <thead><tr><th scope="col">Тема</th><th scope="col">Клиент</th><th scope="col">Последнее сообщение</th><th scope="col">Обновлён</th><th scope="col">Новых</th></tr></thead>
+    <tbody>
+    {% for d in rows %}
+    <tr>
+      <td><a href="{{ url_for('dialog_view', dialog_id=d.id) }}">{{ d.subject }}</a>{% if d.status == 'closed' %} <small>(закрыт)</small>{% endif %}</td>
+      <td>{{ d.client_name }}</td>
+      <td class="cell-clip">{{ d.last_body[:90] }}{% if d.last_body|length > 90 %}...{% endif %}</td>
+      <td>{{ d.updated_at|ru_datetime }}</td>
+      <td>{% if d.unread %}<span class="badge">{{ d.unread }}</span>{% else %}&mdash;{% endif %}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="empty-state"><p>Открытых диалогов нет.</p></div>
+  {% endif %}
+</div>
+{% endblock %}

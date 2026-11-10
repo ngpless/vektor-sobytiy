@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Карта сайта{% endblock %}
+{% block description %}Карта сайта «Вектор событий»: все страницы, разделы, статьи и новости.{% endblock %}
+{% block content %}
+<div class="wrap">
+  <nav class="crumbs" aria-label="Хлебные крошки"><ol><li><a href="{{ url_for('index') }}">Главная</a></li><li aria-current="page">Карта сайта</li></ol></nav>
+  <h1 class="h1-big">Карта сайта</h1>
+  <p class="lead">Полный перечень страниц. Структура: главная, об агентстве, пять разделов со статьями, лента новостей, контакты; отдельно показаны служебные страницы (поиск, вход, личные кабинеты).</p>
+  <div class="sitemap-grid">
+    <section aria-labelledby="sm-main">
+      <h2 id="sm-main" class="h3-big">Основные страницы</h2>
+      <ul class="tree">
+        <li><a href="{{ url_for('index') }}">Главная</a></li>
+        <li><a href="{{ url_for('about') }}">Об агентстве</a></li>
+        <li><a href="{{ url_for('news_list') }}">Новости</a>
+          <ul>{% for n in news %}<li><a href="{{ url_for('news_item', slug=n.slug) }}">{{ n.title }}</a></li>{% endfor %}</ul>
+        </li>
+        <li><a href="{{ url_for('contacts') }}">Контакты и обратная связь</a></li>
+      </ul>
+    </section>
+    <section aria-labelledby="sm-sections">
+      <h2 id="sm-sections" class="h3-big">Разделы и статьи</h2>
+      <ul class="tree">
+        {% for s in sections %}
+        <li><a href="{{ url_for('section', slug=s.slug) }}">{{ s.title }}</a>
+          <ul>{% for a in articles if a.section_slug == s.slug %}<li><a href="{{ url_for('article', slug=s.slug, article_slug=a.slug) }}">{{ a.title }}</a></li>{% endfor %}</ul>
+        </li>
+        {% endfor %}
+      </ul>
+    </section>
+    <section aria-labelledby="sm-service">
+      <h2 id="sm-service" class="h3-big">Служебные страницы</h2>
+      <ul class="tree">
+        <li><a href="{{ url_for('search') }}">Поиск по сайту</a></li>
+        <li><a href="{{ url_for('register') }}">Регистрация</a></li>
+        <li><a href="{{ url_for('login') }}">Вход</a></li>
+        <li><a href="{{ url_for('cabinet') }}">Личный кабинет клиента</a>
+          <ul>
+            <li>Заявка на мероприятие</li>
+            <li>Диалоги с менеджером</li>
+            <li>Смена пароля</li>
+          </ul>
+        </li>
+        <li><a href="{{ url_for('manager_home') }}">Панель менеджера</a> (только для сотрудников)
+          <ul>
+            <li>Входящие диалоги и заявки</li>
+            <li>Создание учётных записей клиентов</li>
+            <li>Публикация статей и новостей</li>
+          </ul>
+        </li>
+        <li><a href="{{ url_for('admin_home') }}">Администрирование</a> (только для администратора)
+          <ul>
+            <li>Пользователи и роли</li>
+            <li>Баннеры</li>
+          </ul>
+        </li>
+        <li><a href="{{ url_for('sitemap_xml') }}">sitemap.xml для поисковых систем</a></li>
+      </ul>
+    </section>
+  </div>
+</div>
+{% endblock %}

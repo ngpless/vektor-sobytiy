@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% from "_staff.html" import manager_tabs %}
+{% from "_forms.html" import csrf %}
+{% block title %}Обращения с формы контактов{% endblock %}
+{% block content %}
+<div class="wrap">
+  <nav class="crumbs" aria-label="Хлебные крошки"><ol><li><a href="{{ url_for('index') }}">Главная</a></li><li><a href="{{ url_for('manager_home') }}">Панель менеджера</a></li><li aria-current="page">Обращения</li></ol></nav>
+  <h1 class="h1-big">Обращения с формы контактов</h1>
+  {{ manager_tabs('feedback') }}
+  {% if rows %}
+  <ul class="feedback-list">
+    {% for f in rows %}
+    <li class="card{% if f.is_handled %} is-done{% endif %}">
+      <p class="msg-head"><strong>{{ f.name }}</strong> &lt;{{ f.email }}&gt; &middot; {{ f.topic }} &middot; {{ f.created_at|ru_datetime }}</p>
+      <p class="msg-body">{{ f.message }}</p>
+      <form method="post" action="{{ url_for('manager_feedback') }}" class="inline-form-block">{{ csrf() }}<input type="hidden" name="id" value="{{ f.id }}"><button class="btn btn-small btn-ghost" type="submit">{{ 'Вернуть в работу' if f.is_handled else 'Отметить обработанным' }}</button></form>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}<div class="empty-state"><p>Обращений пока нет.</p></div>{% endif %}
+</div>
+{% endblock %}

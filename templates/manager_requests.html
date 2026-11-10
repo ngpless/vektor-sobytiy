@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% from "_staff.html" import manager_tabs %}
+{% from "_forms.html" import csrf %}
+{% block title %}Заявки клиентов{% endblock %}
+{% block content %}
+<div class="wrap">
+  <nav class="crumbs" aria-label="Хлебные крошки"><ol><li><a href="{{ url_for('index') }}">Главная</a></li><li><a href="{{ url_for('manager_home') }}">Панель менеджера</a></li><li aria-current="page">Заявки</li></ol></nav>
+  <h1 class="h1-big">Заявки на мероприятия</h1>
+  {{ manager_tabs('requests') }}
+  {% if rows %}
+  <table class="table table-wide">
+    <thead><tr><th scope="col">Клиент</th><th scope="col">Мероприятие</th><th scope="col">Дата</th><th scope="col">Гостей</th><th scope="col">Бюджет</th><th scope="col">Статус</th><th scope="col">Диалог</th></tr></thead>
+    <tbody>
+    {% for r in rows %}
+    <tr>
+      <td>{{ r.client_name }}</td><td>{{ r.event_type }}</td><td>{{ r.event_date|ru_date }}</td><td>{{ r.guests }}</td><td>{{ r.budget or '—' }}</td>
+      <td>
+        <form method="post" action="{{ url_for('manager_requests') }}" class="inline-select">
+          {{ csrf() }}
+          <input type="hidden" name="id" value="{{ r.id }}">
+          <label class="visually-hidden" for="st-{{ r.id }}">Статус заявки {{ r.id }}</label>
+          <select id="st-{{ r.id }}" name="status">
+            {% for key, title in STATUS_REQUEST.items() %}<option value="{{ key }}"{% if key == r.status %} selected{% endif %}>{{ title }}</option>{% endfor %}
+          </select>
+          <button class="btn btn-small" type="submit">Сохранить</button>
+        </form>
+      </td>
+      <td>{% if r.dialog_id %}<a href="{{ url_for('dialog_view', dialog_id=r.dialog_id) }}">Открыть</a>{% endif %}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% else %}<div class="empty-state"><p>Заявок пока нет.</p></div>{% endif %}
+</div>
+{% endblock %}

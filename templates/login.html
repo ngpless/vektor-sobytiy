@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% from "_forms.html" import errors_box, csrf, field %}
+{% block title %}Вход{% endblock %}
+{% block content %}
+<div class="wrap narrow">
+  <nav class="crumbs" aria-label="Хлебные крошки"><ol><li><a href="{{ url_for('index') }}">Главная</a></li><li aria-current="page">Вход</li></ol></nav>
+  <h1 class="h1-big">Вход в личный кабинет</h1>
+  {% if error %}<div class="form-errors" role="alert"><p>{{ error }}</p></div>{% endif %}
+  <form method="post" action="{{ url_for('login') }}" class="form-card" novalidate>
+    {{ csrf() }}
+    {% if nxt %}<input type="hidden" name="next" value="{{ nxt }}">{% endif %}
+    {{ field('login', 'Логин или электронная почта', ident, autocomplete='username', maxlength=120) }}
+    {{ field('password', 'Пароль', '', type='password', autocomplete='current-password') }}
+    <button class="btn" type="submit">Войти</button>
+  </form>
+  <p class="muted">Нет учётной записи? <a href="{{ url_for('register') }}">Зарегистрируйтесь</a> самостоятельно или попросите менеджера создать её для вас.</p>
+</div>
+{% endblock %}
